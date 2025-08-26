@@ -1,3 +1,12 @@
+# Changelog
+
+- composer require symfony/orm-pack
+- composer require --dev symfony/maker-bundle
+
+- Added explicit DB ports to compose.yaml
+
+- orm-pack requires me to "Modify your DATABASE_URL config in .env". Did that, and also added .env dev credentials for use in compose.yaml
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
