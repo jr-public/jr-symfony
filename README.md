@@ -7,6 +7,16 @@
 
 - orm-pack requires me to "Modify your DATABASE_URL config in .env". Did that, and also added .env dev credentials for use in compose.yaml
 
+- composer require firebase/php-jwt
+- composer require symfony/serializer-pack
+- composer require symfony/uid
+- composer require symfony/security-bundle
+- composer require --dev symfony/profiler-pack
+- composer require --dev symfony/test-pack
+- composer require symfony/rate-limiter
+- composer require symfony/validator
+- composer require symfony/mailer
+- composer require symfony/mailtrap-mailer
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
