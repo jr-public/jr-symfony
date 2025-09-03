@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use App\DTO\UserListFiltersDTO;
 use App\Entity\User;
 use App\Enum\TokenType;
 use App\Enum\UserRole;
@@ -16,13 +17,18 @@ class UserService
 		private readonly EntityManagerInterface $entityManager,
 		private readonly TokenService $tokenService,
         private readonly UserRepository $userRepo,
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
 		// private readonly EmailService $emailService
 	) {}
     public function get(int $id): ?User
     {
         $options = ["id" => $id];
         return $this->userRepo->findOneBy($options);
+    }
+    public function index(UserListFiltersDTO $filters): array
+    {
+        $result = $this->userRepo->findWithFilters($filters);
+        return $result;
     }
 	public function create(string $username, string $email, string $password, UserRole $role = UserRole::User): array
     {
@@ -60,6 +66,8 @@ class UserService
             case 'username':
                 $user->setUsername($value);
                 break;
+            default:
+                return $user;
             }
         $this->entityManager->flush();
         return $user;
@@ -69,6 +77,7 @@ class UserService
         $this->entityManager->remove($user);
         $this->entityManager->flush();
     }
+
 	public function login(User $user): array
 	{
         $identifier = $user->getEmail();
