@@ -18,7 +18,7 @@ class UserService
 		private readonly TokenService $tokenService,
         private readonly UserRepository $userRepo,
         private readonly UserPasswordHasherInterface $passwordHasher,
-		// private readonly EmailService $emailService
+		private readonly EmailService $emailService
 	) {}
     public function get(int $id): ?User
     {
@@ -45,7 +45,7 @@ class UserService
         }
 
         $token = $this->tokenService->createToken(TokenType::ActivateAccount, $user);
-        // $this->emailService->sendWelcomeEmail($user->getEmail(), $user->getUsername(), $token);
+        $this->emailService->sendWelcomeEmail($user->getEmail(), $user->getUsername(), $token);
 		return [
 			'token' => $token,
 			'user' 	=> $user->toArray()
@@ -108,7 +108,7 @@ class UserService
         $user = $this->userRepo->findOneBy(['email' =>$email]);
         if ($user && $user->isActivated()) {
             $token = $this->tokenService->createToken(TokenType::ForgotPassword, $user);
-            // $this->emailService->sendPasswordResetEmail($user->getEmail(), $user->getUsername(), $token);
+            $this->emailService->sendPasswordResetEmail($user->getEmail(), $user->getUsername(), $token);
 			return $token;
         }
 		return null;
@@ -124,7 +124,7 @@ class UserService
         $user = $this->userRepo->findOneBy(['email'=>$email]);
         if ($user && !$user->isActivated()) {
             $token = $this->tokenService->createToken(TokenType::ActivateAccount, $user);
-            // $this->emailService->sendWelcomeEmail($user->getEmail(), $user->getUsername(), $token);
+            $this->emailService->sendWelcomeEmail($user->getEmail(), $user->getUsername(), $token);
 			return $token;
         }
 		return null;
