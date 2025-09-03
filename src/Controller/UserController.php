@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\DTO\UserListFiltersDTO;
@@ -44,6 +43,22 @@ final class UserController extends AbstractController
     public function delete(User $target): JsonResponse
     {
         $this->userService->delete($target);
+        return $this->responseBuilder->success();
+    }
+    #[Route('/user/{id}/suspend', name: 'user_suspend', methods: ['POST'])]
+    #[IsGranted('USER_SUSPEND', subject: 'target')]
+    public function suspend(#[MapRequestPayload] UserSuspendDTO $dto, User $target): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('USER_SUSPEND', $target);
+        $this->userService->suspend($target, $dto->until);
+        return $this->responseBuilder->success();
+    }
+    #[Route('/user/{id}/unsuspend', name: 'user_unsuspend', methods: ['POST'])]
+    #[IsGranted('USER_SUSPEND', subject: 'target')]
+    public function unsuspend(User $target): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('USER_SUSPEND', $target);
+        $this->userService->unsuspend($target);
         return $this->responseBuilder->success();
     }
 }

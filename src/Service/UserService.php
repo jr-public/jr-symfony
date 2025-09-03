@@ -66,6 +66,9 @@ class UserService
             case 'username':
                 $user->setUsername($value);
                 break;
+            case 'suspendUntil':
+                $user->setSuspendedUntil($value);
+                break;
             default:
                 return $user;
             }
@@ -76,6 +79,14 @@ class UserService
     {
         $this->entityManager->remove($user);
         $this->entityManager->flush();
+    }
+    public function suspend(User $user, \DateTimeImmutable $until): void
+    {
+        $this->patch($user, 'suspendUntil', $until);
+    }
+    public function unsuspend(User $user): void
+    {
+        $this->patch($user, 'suspendUntil', null);
     }
 
 	public function login(User $user): array
