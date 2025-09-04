@@ -1,12 +1,111 @@
-# Changelog
+# User Authentication & Management API
 
+[![PHP Version](https://img.shields.io/badge/PHP-8.4-blue)](https://www.php.net/)
+[![Symfony](https://img.shields.io/badge/Symfony-7.3-green)](https://symfony.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-blue)](https://www.docker.com/)
+
+A production-ready REST API for user authentication and management built with modern PHP practices and enterprise-grade security.
+
+## Features
+
+- **Complete Authentication Flow** - Registration, login, email verification, and password reset
+- **JWT Token Management** - Secure stateless authentication with configurable expiration
+- **Role-Based Access Control** - Admin and user roles with granular permissions
+- **User Administration** - Full CRUD operations with suspend/unsuspend functionality
+- **Email Integration** - Automated welcome emails and password reset notifications
+- **Production Ready** - Docker containerization with PostgreSQL and Redis
+
+| Component | Technology |
+|-----------|------------|
+| Framework | Symfony 7.3 |
+| Language | PHP 8.4 |
+| Database | PostgreSQL 15+ |
+| Cache/Queue | Redis 7 |
+| Server | FrankenPHP + Caddy |
+| Testing | PHPUnit |
+
+# Deployment
+
+## Quick Start
+
+### Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jr-public/jr-symfony
+   cd jr-symfony
+   ```
+
+2. **Start the application**
+   ```bash
+   docker compose up --build --pull always --wait
+   ```
+
+3. **Initialize the database with sample data**
+   ```bash
+   docker compose exec php bin/console app:seed
+   ```
+
+The application will be available at:
+- **API**: http://localhost:80
+- **Database**: localhost:5432 (PostgreSQL)
+- **Redis**: localhost:6379
+- **Mailpit** (email testing): http://localhost:8025
+
+### Cleanup Commands
+
+**Remove old volumes** (if you need a fresh start):
+```bash
+docker compose down --remove-orphans -v
+```
+
+**Copy vendor files** to your local machine (for IDE autocomplete):
+```bash
+# Find the PHP container ID
+docker ps
+
+# Copy vendor directory (replace PHP_APP_ID with actual container ID)
+docker cp PHP_APP_ID:/app/vendor ./
+```
+
+## API Overview
+
+### Authentication Endpoints
+| Endpoint | Method | Description |
+|----------|---------|-------------|
+| `/guest/registration` | POST | Register new user account |
+| `/guest/login` | POST | Authenticate and receive JWT |
+| `/guest/activate-account/{token}` | GET | Activate user account |
+| `/guest/forgot-password` | POST | Request password reset |
+| `/guest/reset-password` | POST | Reset password with token |
+| `/guest/resend-activation` | POST | Resend activation email |
+
+### User Management Endpoints
+| Endpoint | Method | Description | Auth Required |
+|----------|---------|-------------|---------------|
+| `/user` | GET | List all users with filters | ✓ |
+| `/user/{id}` | GET | Get user details | ✓ |
+| `/user/{id}` | PATCH | Update user properties | ✓ Admin |
+| `/user/{id}` | DELETE | Delete user account | ✓ Admin |
+| `/user/{id}/suspend` | POST | Suspend user account | ✓ Admin |
+| `/user/{id}/unsuspend` | POST | Unsuspend user account | ✓ Admin |
+
+## Project Structure
+
+```
+src/
+├── Controller/     # HTTP request handlers
+├── Entity/         # Doctrine ORM models
+├── Service/        # Business logic layer
+├── DTO/           # Data transfer objects
+├── Security/      # Authentication & authorization
+└── Exception/     # Custom exception classes
+```
+
+# Used libraries
 - composer require symfony/orm-pack
 - composer require --dev symfony/maker-bundle
-
-- Added explicit DB ports to compose.yaml
-
-- orm-pack requires me to "Modify your DATABASE_URL config in .env". Did that, and also added .env dev credentials for use in compose.yaml
-
 - composer require firebase/php-jwt
 - composer require symfony/serializer-pack
 - composer require symfony/uid
@@ -22,55 +121,3 @@
 - composer require symfony/twig-bundle
 - composer require symfony/asset
 - composer require nelmio/api-doc-bundle
-
-# Symfony Docker
-
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
-
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
-
-## Getting Started
-
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
-
-## Features
-
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
-
-**Enjoy!**
-
-## Docs
-
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
-
-## License
-
-Symfony Docker is available under the MIT License.
-
-## Credits
-
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
