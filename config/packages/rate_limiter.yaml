@@ -1,0 +1,8 @@
+# config/packages/rate_limiter.yaml
+framework:
+    rate_limiter:
+        main:
+            policy: 'sliding_window'
+            limit: 5
+            # '60 minutes'
+            interval: '1 minute'
