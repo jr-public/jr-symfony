@@ -1,76 +1,86 @@
-# Changelog
+# API Starter: Symfony User & Auth
 
-- composer require symfony/orm-pack
-- composer require --dev symfony/maker-bundle
+![Project Status](https://img.shields.io/badge/status-in%20development-blue)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4-blue)](https://www.php.net/)
+[![Symfony](https://img.shields.io/badge/Symfony-7.3-green)](https://symfony.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-blue)](https://www.docker.com/)
 
-- Added explicit DB ports to compose.yaml
+Designed as a portfolio showcase and a jumping-off point for future applications, this REST API functions as a User Management and Authentication system, providing endpoints for registration, login, token refresh, and user profile management.
 
-- orm-pack requires me to "Modify your DATABASE_URL config in .env". Did that, and also added .env dev credentials for use in compose.yaml
+## Project Status
 
-- composer require firebase/php-jwt
-- composer require symfony/serializer-pack
-- composer require symfony/uid
-- composer require symfony/security-bundle
-- composer require --dev symfony/profiler-pack
-- composer require --dev symfony/test-pack
-- composer require symfony/rate-limiter
-- composer require symfony/validator
-- composer require symfony/mailer
-- composer require symfony/mailtrap-mailer
-- composer require symfony/messenger
-- composer require symfony/redis-messenger
-- composer require symfony/twig-bundle
-- composer require symfony/asset
-- composer require nelmio/api-doc-bundle
-
-# Symfony Docker
-
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
-
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
-
-## Getting Started
-
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+Currently under active development. While the core features are functional and stable, the codebase is actively being refined, and features are still being added.
 
 ## Features
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+- **Complete Authentication Flow** - Registration, login, email verification, and password reset
+- **JWT Token Management** - Secure stateless authentication with configurable expiration
+- **Role-Based Access Control** - Admin and user roles with granular permissions
+- **User Administration** - Full CRUD operations with suspend/unsuspend functionality
+- **Email Integration** - Automated emails for common features: registration, password reset, and others
 
-**Enjoy!**
+| Component | Technology |
+|-----------|------------|
+| Framework | Symfony 7.3 |
+| Language | PHP 8.4 |
+| Database | PostgreSQL 15+ |
+| Cache/Queue | Redis 7 |
+| Testing | PHPUnit |
 
-## Docs
+# Deployment
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+## Quick Start
 
-## License
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jr-public/jr-symfony
+   cd jr-symfony
+   ```
 
-Symfony Docker is available under the MIT License.
+2. **Start the application**
+   ```bash
+   docker compose up --build --pull always --wait
+   ```
 
-## Credits
+3. **Initialize the database with sample data**
+   ```bash
+   docker compose exec php bin/console app:seed
+   ```
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+The application will be available at:
+- **API**: http://localhost:80
+- **Database**: localhost:5432 (PostgreSQL)
+- **Redis**: localhost:6379
+
+
+## API Documentation
+
+**View the live API docs** for the deployed version at: 
+Once your application is running, you can access interactive API documentation through Swagger UI:
+
+**Swagger UI**: [http://localhost/api/doc](http://localhost/api/doc)
+
+This provides an interactive interface where you can:
+- Browse all available endpoints
+- View request/response schemas
+- Test endpoints directly with example payloads
+- See authentication requirements for each endpoint
+
+**Raw OpenAPI Specification**: [http://localhost/api/doc.json](http://localhost/api/doc.json)
+
+## Cleanup Commands
+
+**Remove old volumes** (if you need a fresh start):
+```bash
+docker compose down --remove-orphans -v
+```
+
+**Copy vendor files** to your local machine (for IDE autocomplete):
+```bash
+# Find the PHP container ID
+docker ps
+
+# Copy vendor directory (replace PHP_APP_ID with actual container ID)
+docker cp PHP_APP_ID:/app/vendor ./
+```
