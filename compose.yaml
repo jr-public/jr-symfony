@@ -35,7 +35,14 @@ services:
 # Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
-
+  redis:
+    container_name: ${APP_NAME:-app}-redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
@@ -58,6 +65,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  redis_data:
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
 
