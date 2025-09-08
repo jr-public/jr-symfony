@@ -36,6 +36,11 @@ class UserService
         $this->entityManager->flush();
         return $user;
     }
+    public function index(array $filters): array
+    {
+        $result = $this->userRepo->findWithFilters($filters);
+        return $result;
+    }
 	public function create(string $username, string $email, string $password, UserRole $role = UserRole::User): array
     {
         try {
@@ -62,6 +67,17 @@ class UserService
         $this->entityManager->remove($user);
         $this->entityManager->flush();
     }
+    public function suspend(User $user, \DateTimeImmutable $until): void
+    {
+        $user->setSuspendedUntil($until);
+        $this->entityManager->flush();
+    }
+    public function unsuspend(User $user): void
+    {
+        $user->setSuspendedUntil(null);
+        $this->entityManager->flush();
+    }
+
 	public function login(User $user): array
 	{
         $identifier = $user->getEmail();
