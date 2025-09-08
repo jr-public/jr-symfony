@@ -13,13 +13,30 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
-            provider: app_user_provider
+        guest_login:
+            pattern: ^/api/guest/login
             stateless: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: guest_login
                 username_path: email
+                failure_handler: App\Security\AuthenticationFailureHandler
+            login_throttling:
+                max_attempts: 3
+                interval: '10 minutes' # default 1 min
+        guest:
+            pattern: ^/api/guest
+            stateless: true
+            security: false
+        main:
+            lazy: true
+            stateless: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+            access_token:
+                token_handler: App\Security\AccessTokenHandler
+                failure_handler: App\Security\AuthenticationFailureHandler
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -27,11 +44,9 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/guest, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
