@@ -19,7 +19,8 @@
 - composer require symfony/mailtrap-mailer
 - composer require symfony/messenger
 - composer require symfony/redis-messenger
-
+- composer require symfony/twig-bundle
+- composer require symfony/asset
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
