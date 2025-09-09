@@ -21,6 +21,8 @@
 - composer require symfony/redis-messenger
 - composer require symfony/twig-bundle
 - composer require symfony/asset
+- composer require nelmio/api-doc-bundle
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
