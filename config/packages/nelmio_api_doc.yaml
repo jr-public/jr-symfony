@@ -1,0 +1,12 @@
+nelmio_api_doc:
+    documentation:
+        servers:
+          - url: https://localhost:80/api
+            description: local development server
+        info:
+            title: jr-symfony
+            description: Fully configured REST API using Symfony framework
+            version: 0.1.1
+    areas:
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
