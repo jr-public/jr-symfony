@@ -17,6 +17,9 @@
 - composer require symfony/validator
 - composer require symfony/mailer
 - composer require symfony/mailtrap-mailer
+- composer require symfony/messenger
+- composer require symfony/redis-messenger
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,

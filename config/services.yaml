@@ -6,6 +6,7 @@
 parameters:
     app.token.algorithm.default: 'HS256'
     app.token.secret: '%env(APP_SECRET)%'
+    app.email.info: 'info@jr-symfony.com'
 
 services:
     # default configuration for services in *this* file
