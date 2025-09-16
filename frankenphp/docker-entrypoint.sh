@@ -52,6 +52,23 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 			echo 'The database is now ready and reachable'
 		fi
 
+		# Check if we need to setup test database (look for _test database usage)
+		if php bin/console --env=test dbal:run-sql -q "SELECT 1" 2>/dev/null; then
+			echo 'Test database connection available, skipping test setup'
+		else
+			echo 'Test database not found, setting up...'
+			
+			# Create test database
+			echo 'Creating test database...'
+			php bin/console --env=test doctrine:database:create --if-not-exists
+			
+			# Run test migrations
+			echo 'Running test database migrations...'
+			php bin/console --env=test doctrine:migrations:migrate --no-interaction --allow-no-migration
+			
+			echo 'Test database setup complete!'
+		fi
+		
 		if [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
 			php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 		fi
