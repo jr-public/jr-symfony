@@ -71,6 +71,18 @@ class UserService
     }
 
     /**
+     * Retrieves a list of users based on an array of filters.
+     *
+     * @param array $filters An associative array of filters.
+     * @return array The array of user entities matching the filters.
+     */
+    public function index(array $filters): array
+    {
+        $result = $this->userRepo->findWithFilters($filters);
+        return $result;
+    }
+
+    /**
      * Creates a new user account, hashes the password, and sends a welcome email.
      *
      * @param string $username The user's desired username.
@@ -110,6 +122,29 @@ class UserService
     public function delete(User $user): void
     {
         $this->entityManager->remove($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Suspends a user account until a specific date.
+     *
+     * @param User $user The user to suspend.
+     * @param \DateTimeImmutable $until The date until which the account is suspended.
+     */
+    public function suspend(User $user, \DateTimeImmutable $until): void
+    {
+        $user->setSuspendedUntil($until);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Unsuspends a user account by removing the suspension date.
+     *
+     * @param User $user The user to unsuspend.
+     */
+    public function unsuspend(User $user): void
+    {
+        $user->setSuspendedUntil(null);
         $this->entityManager->flush();
     }
 
