@@ -1,11 +1,11 @@
 <?php
 namespace App\EventSubscriber;
 
+use App\Exception\ApiException;
 use App\Service\ResponseBuilder;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -23,9 +23,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
     }
     public function onKernelException(ExceptionEvent $event): void
     {
-        if (!$this->isDebugEnabled) {
-            $response = $this->responseBuilder->error($event->getThrowable());
-            $event->setResponse($response);
+        $throwable = $event->getThrowable();
+        if ($throwable instanceof ApiException) {
+            $response = $this->responseBuilder->error($throwable, $throwable->getHttpStatus());
         }
+        else {
+            $response = $this->responseBuilder->error($throwable, 500);
+        }
+        $event->setResponse($response);
     }
 }
