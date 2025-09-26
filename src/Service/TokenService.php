@@ -110,12 +110,12 @@ class TokenService
         /** @var Token|null $tokenEntity */
         $tokenEntity = $qb->getQuery()->getOneOrNullResult();
         if (!$tokenEntity) {
-            throw new AuthException('TOKEN_INVALID', 'TOKEN_NOT_FOUND');
+            throw new AuthException('TOKEN_INVALID', 'TOKEN_NOT_FOUND', 401);
         }
 
         // Verify secret
         if (!password_verify($secret, $tokenEntity->getHash())) {
-            throw new AuthException('TOKEN_INVALID', 'TOKEN_SECRET_MISMATCH');
+            throw new AuthException('TOKEN_INVALID', 'TOKEN_SECRET_MISMATCH', 401);
         }
         // Mark as used
         $tokenEntity->setUsed();
