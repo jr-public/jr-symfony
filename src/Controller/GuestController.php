@@ -128,7 +128,7 @@ final class GuestController extends AbstractController
     public function forgotPassword(#[MapRequestPayload] EmailDTO $dto): JsonResponse
     {
         $token = $this->userService->forgotPassword($dto->email);
-        return $this->responseBuilder->success($token);
+        return $this->responseBuilder->success(['token' => $token]);
     }
 
     /**
