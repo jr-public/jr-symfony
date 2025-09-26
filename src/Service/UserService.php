@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Enum\TokenType;
 use App\Enum\UserRole;
+use App\Exception\AuthException;
 use App\Exception\BusinessException;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -103,7 +104,7 @@ class UserService
             $this->entityManager->persist($user);
             $this->entityManager->flush();
         } catch (UniqueConstraintViolationException $th) {
-            throw new BusinessException('USER_CREATION_FAILED', 'UNIQUE_CONSTRAINT');
+            throw new BusinessException('USER_CREATION_FAILED', 'UNIQUE_CONSTRAINT', 409);
         }
 
         $token = $this->tokenService->createToken(TokenType::ActivateAccount, $user);
@@ -172,6 +173,9 @@ class UserService
     public function activateAccount(string $token): void
     {
         $user = $this->tokenService->verifyToken($token, TokenType::ActivateAccount);
+        if ($user->isSuspended()) {
+            throw new AuthException('AUTH_ERROR', 'USER_SUSPENDED', 403);
+        }
         $user->activate();
         $this->entityManager->flush();
     }
@@ -185,7 +189,7 @@ class UserService
     public function forgotPassword(string $email): ?string
     {
         $user = $this->userRepo->findOneBy(['email' =>$email]);
-        if ($user && $user->isActivated()) {
+        if ($user && !$user->isSuspended() && $user->isActivated()) {
             $token = $this->tokenService->createToken(TokenType::ForgotPassword, $user);
             $this->emailService->sendPasswordResetEmail($user->getEmail(), $user->getUsername(), $token);
             return $token;
@@ -202,6 +206,15 @@ class UserService
     public function resetPassword(string $token, string $password): void
     {
         $user = $this->tokenService->verifyToken($token, TokenType::ForgotPassword);
+        if (!$user) {
+            throw new AuthException('AUTH_ERROR', 'USER_NOT_FOUND', 401);
+        }
+        elseif ($user->isSuspended()) {
+            throw new AuthException('AUTH_ERROR', 'USER_SUSPENDED', 401);
+        }
+        elseif (!$user->isActivated()) {
+            throw new AuthException('AUTH_ERROR', 'USER_INACTIVE', 401);
+        }
         $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
         $this->entityManager->flush();
@@ -216,7 +229,7 @@ class UserService
     public function resendActivation(string $email): ?string
     {
         $user = $this->userRepo->findOneBy(['email'=>$email]);
-        if ($user && !$user->isActivated()) {
+        if ($user && !$user->isSuspended() && !$user->isActivated()) {
             $token = $this->tokenService->createToken(TokenType::ActivateAccount, $user);
             $this->emailService->sendWelcomeEmail($user->getEmail(), $user->getUsername(), $token);
             return $token;
