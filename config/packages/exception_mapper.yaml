@@ -1,0 +1,21 @@
+parameters:
+  app.exception.mapping:
+    - exception: Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+      apiException: App\Exception\ValidationException
+      code: 'VALIDATION_EXCEPTION'
+      status: 400
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: Full authentication is required to access this resource.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: The presented password is invalid.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: Bad credentials.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
