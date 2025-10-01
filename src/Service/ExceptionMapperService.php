@@ -3,11 +3,16 @@
 namespace App\Service;
 
 use App\Exception\ApiException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ExceptionMapperService
 {
+	
 	private array $indexed = [];
-    public function __construct(array $mapping) { // Autowired: /config/services.yaml
+	
+    public function __construct(
+		#[Autowire('%app.exception.mapping%')] private readonly array $mapping
+	) {
 		foreach ($mapping as $map) {
 			$this->indexed[$map['exception']][] = $map;
 		}
