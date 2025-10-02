@@ -30,6 +30,7 @@ class ExceptionMapperService
 		$matches = $this->indexed[$throwable::class] ?? [];
 		if (empty($matches)) { 
 			$apiException = new ApiException('UNKNOWN_ERROR', $throwable->getMessage(), 500);
+			$apiException->setThrownBy($throwable);
 			return $apiException;
         }
 		
