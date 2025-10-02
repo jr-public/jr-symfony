@@ -70,15 +70,22 @@ final class ResponseBuilder
         // Add more detailed error information in development environment
         if ($this->environment != 'prod') {
             $error = array_merge($error, [
-                'message'   => $exception->getMessage(),
-                'detail'   => ($exception instanceof ApiException)?$exception->getDetail():null,
                 'method'    => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 'uri'       => $_SERVER['REQUEST_URI'] ?? 'unknown',
-                'class'     => get_class($exception),
-                'file'      => $exception->getFile(),
-                'line'      => $exception->getLine(),
-                'trace'     => $exception->getTrace(),
             ]);
+            if ($exception instanceof ApiException) {
+                $error = array_merge($error, $exception->toArray());
+            }
+            else {
+                $error = array_merge($error, [
+                    'class'     => get_class($exception),
+                    'message'   => $exception->getMessage(),
+                    'status'    => $exception->getCode(),
+                    'file'      => $exception->getFile(),
+                    'line'      => $exception->getLine(),
+                    'trace'     => $exception->getTrace(),
+                ]);
+            }
         }
         // Return a standardized error response with null data and error details
         return new JsonResponse([
