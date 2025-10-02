@@ -44,13 +44,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct(UserRole $role)
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->roles = [UserRole::User];
+        $this->roles = [UserRole::User->value];
         if (!in_array($role, $this->roles)) {
-            $this->roles[] = $role;
+            $this->roles[] = $role->value;
         }
     }
     public function toArray(): array {
-        return get_object_vars($this);
+        $array = [
+            'id'                => $this->getId(),
+            'username'          => $this->getUsername(),
+            'email'             => $this->getEmail(),
+            'roles'             => $this->getRoles(),
+            'isActivated'       => $this->isActivated(),
+            'suspendedUntil'    => $this->getSuspendedUntil()?->format(\DateTimeInterface::ATOM), // ISO 8601 format
+            'createdAt'         => $this->getCreatedAt()?->format(\DateTimeInterface::ATOM), // ISO 8601 format
+        ];
+        return $array;
     }
     public function getId(): ?int
     {
@@ -87,7 +96,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->roles;
         return $roles;
     }
-
     /**
      * @see PasswordAuthenticatedUserInterface
      */
