@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->created_at = new \DateTimeImmutable();
         $this->roles = [UserRole::User->value];
-        if (!in_array($role, $this->roles)) {
+        if (!in_array($role->value, $this->roles)) {
             $this->roles[] = $role->value;
         }
     }
