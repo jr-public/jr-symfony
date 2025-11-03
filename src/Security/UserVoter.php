@@ -41,26 +41,32 @@ class UserVoter extends Voter
 
     private function canDelete(User $target, User $current): bool
     {
-        // Only admin can delete, not themselves, only regular users
         if (!in_array('ROLE_ADMIN', $current->getRoles(), true)) {
-            return false;
+            return $target->getId() === $current->getId();
         }
 
-        if ($target->getId() === $current->getId()) {
-            return false;
+        if (in_array('ROLE_ADMIN', $target->getRoles(), true)) {
+            return $target->getId() === $current->getId();
         }
 
-        return !in_array('ROLE_ADMIN', $target->getRoles(), true);
+        return true;
     }
-
     private function canEdit(User $target, User $current): bool
     {
-        // Maybe admins can edit anyone, users can only edit themselves
-        if (in_array('ROLE_ADMIN', $current->getRoles(), true)) {
-            return true;
+        // 1. Regular users can only edit themselves
+        if (!in_array('ROLE_ADMIN', $current->getRoles(), true)) {
+            return $target->getId() === $current->getId();
         }
 
-        return $target->getId() === $current->getId();
+        // Current user is an Admin at this point.
+        
+        // 2. An Admin can never edit another Admin.
+        if (in_array('ROLE_ADMIN', $target->getRoles(), true)) {
+            return $target->getId() === $current->getId();
+        }
+
+        // 3. Admin editing a non-Admin (Regular User). This is allowed.
+        return true;
     }
 
     private function canSuspend(User $target, User $current): bool
