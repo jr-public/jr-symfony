@@ -7,8 +7,8 @@
          failOnDeprecation="true"
          failOnNotice="true"
          failOnWarning="true"
-         stopOnError="true"
-         stopOnFailure="true"
+         stopOnError="false"
+         stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
 >
