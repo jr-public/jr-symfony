@@ -1283,7 +1283,48 @@ class UserControllerTest extends WebTestCase
         $resultingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $target->getEmail()]);
         $this->assertEquals(false, $resultingUser->isSuspended());
     }
-    
+    /* 
+     * refresh() testing methods
+     */
+    public function testRefreshReturnsNewValidToken(): void
+    {
+        $user = $this->createTestUser(
+            'test@email.com',
+            'testUsername',
+            'correctPass',
+            true
+        );
+        $token = $this->createTestJwt($user->getEmail());
+
+        $this->client->request(
+            'POST',
+            '/api/user/refresh',
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => "Bearer $token",
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_ACCEPT'  => 'application/json',
+            ],
+        );
+
+        $this->assertResponseIsSuccessful();
+        $responseContent = $this->client->getResponse()->getContent();
+        $data = json_decode($responseContent, true);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('error', $data);
+        $this->assertEmpty($data['error']);
+        $this->assertArrayHasKey('data', $data);
+        $this->assertNotEmpty($data['data']);
+        $this->assertArrayHasKey('token', $data['data']);
+        $this->assertNotEmpty($data['data']['token']);
+
+        $decodedToken = $this->tokenService->decodeSessionJwt($data['data']['token']);
+        $this->assertNotNull($decodedToken);
+        $result = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $decodedToken->sub]);
+        $this->assertEquals($user->getUsername(), $result->getUsername());
+        $this->assertEquals($user->getEmail(), $result->getEmail());
+    }
     /**
      * Helper method to create a test user
      */

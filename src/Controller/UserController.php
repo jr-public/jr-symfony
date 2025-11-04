@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -141,5 +142,22 @@ final class UserController extends AbstractController
     {
         $this->userService->unsuspend($target);
         return $this->responseBuilder->success();
+    }
+    /**
+     * Returns a new session token.
+     *
+     * @param User $target The user entity to unsuspend.
+     * @return JsonResponse
+     */
+    #[Route('/user/refresh', name: 'user_refresh', methods: ['POST'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a new session token.'
+    )]
+    public function refresh(#[CurrentUser] User $user): JsonResponse
+    {
+        $result = $this->userService->login($user);
+        $token = $result['token'];
+        return $this->responseBuilder->success(['token' => $token]);
     }
 }

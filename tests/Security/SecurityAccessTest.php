@@ -68,6 +68,7 @@ final class SecurityAccessTest extends WebTestCase
             ['GET', '/api/user/{id}'],
             ['PATCH', '/api/user/{id}'],
             ['DELETE', '/api/user/{id}'],
+            ['POST', '/api/user/refresh'],
         ];
     }
 
