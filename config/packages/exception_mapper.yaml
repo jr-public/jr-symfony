@@ -1,0 +1,56 @@
+parameters:
+  app.exception.mapping:
+    - exception: Doctrine\DBAL\Exception\UniqueConstraintViolationException
+      apiException: App\Exception\BusinessException
+      code: 'UNIQUE_VIOLATION'
+      status: 409
+    - exception: Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+      apiException: App\Exception\AuthException
+      code: 'ACCESS_DENIED'
+      status: 403
+    - exception: Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException
+      apiException: App\Exception\ValidationException
+      error: The value you selected is not a valid choice.
+      code: 'FORBIDDEN_PROPERTY'
+      status: 403
+    - exception: Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException
+      apiException: App\Exception\ValidationException
+      error: This value should not be blank.
+      code: 'EMPTY_VALUE'
+      status: 403
+    - exception: Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException
+      apiException: App\Exception\ValidationException
+      error: This value should be of type string.
+      code: 'BAD_VALUE_TYPE'
+      status: 403
+    - exception: Symfony\Component\RateLimiter\Exception\RateLimitExceededException
+      apiException: App\Exception\ApiException
+      code: 'TOO_MANY_REQUESTS'
+      status: 429
+    - exception: Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+      apiException: App\Exception\ValidationException
+      code: 'VALIDATION_EXCEPTION'
+      status: 400
+    - exception: Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+      apiException: App\Exception\NotFoundException
+      code: 'METHOD_NOT_ALLOWED'
+      status: 405
+    - exception: Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+      apiException: App\Exception\NotFoundException
+      code: 'NOT_FOUND'
+      status: 404
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: Full authentication is required to access this resource.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: The presented password is invalid.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
+    - exception: Symfony\Component\HttpKernel\Exception\HttpException
+      error: Bad credentials.
+      apiException: App\Exception\AuthException
+      code: 'AUTH_ERROR'
+      status: 401
