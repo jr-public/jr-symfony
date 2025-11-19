@@ -8,6 +8,8 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+/docker-compose.override.yaml
+
 ###> phpunit/phpunit ###
 /phpunit.xml
 /.phpunit.cache/

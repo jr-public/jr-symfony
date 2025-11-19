@@ -3,6 +3,11 @@
 
 	{$CADDY_GLOBAL_OPTIONS}
 
+	# Disable automatic HTTPS in production (when CADDY_AUTO_HTTPS is set to 'off')
+	# This is recommended when the app container is behind a load balancer (e.g., AWS ELB)
+	# that handles SSL/TLS termination
+	auto_https off
+
 	frankenphp {
 		{$FRANKENPHP_CONFIG}
 
@@ -16,7 +21,7 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-{$SERVER_NAME:localhost} {
+:80 {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 		# Redact the authorization query parameter that can be set by Mercure
